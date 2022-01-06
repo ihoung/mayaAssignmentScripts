@@ -71,16 +71,21 @@ class LandscapeGenWnd:
 
         if opt == 'Rock':
             cmds.text('GeneralSize', label='General Size: ', parent=ctrlTab)
-            cmds.floatSliderGrp('MinScale', field=True, label='Min Size ', minValue=0.0, value=1.0, changeCommand=self.updateGeneration, parent=ctrlTab)
+            cmds.floatSliderGrp('MinScale', field=True, label='Min Size ', minValue=0.0, value=1.0, changeCommand=self.rockMinSizeOnChg, parent=ctrlTab)
             cmds.floatSliderGrp('MaxScale', field=True, label='Max Size ', minValue=0.0, value=1.0, changeCommand=self.updateGeneration, parent=ctrlTab)
             cmds.text('SingleRock', label='Shape Turbulence of Single Rock: ', parent=ctrlTab)
-            cmds.floatSliderGrp('SizeTurb', field=True, label='Size Turbulence', minValue=0.0, value=0.0, changeCommand=self.updateGeneration, parent=ctrlTab)
-            cmds.floatSliderGrp('ShapeTurb', field=True, label='Shape Turbulence ', minValue=1.0, value=2.0, changeCommand=self.updateGeneration, parent=ctrlTab)
+            cmds.floatSliderGrp('SizeTurb', field=True, label='Size Turbulence', minValue=0.0, maxValue=1.0, value=0.0, changeCommand=self.updateGeneration, parent=ctrlTab)
+            cmds.intSliderGrp('ShapeTurb', field=True, label='Shape Turbulence ', minValue=1, value=2, changeCommand=self.updateGeneration, parent=ctrlTab)
         else:
             cmds.floatSliderGrp('MinScale', field=True, label='Min Scale ', minValue=0.0, value=1.0, changeCommand=self.updateGeneration, parent=ctrlTab)
             cmds.floatSliderGrp('MaxScale', field=True, label='Max Scale ', minValue=0.0, value=1.0, changeCommand=self.updateGeneration, parent=ctrlTab)
 
         self.m_landscapeType = opt
+
+
+    def rockMinSizeOnChg(self, *args):
+        cmds.floatSliderGrp('SizeTurb', e=True, maxValue=cmds.floatSliderGrp('MinScale', q=True, v=True))
+        self.updateGeneration()
 
 
     def customizedBtnOnChg(self, sl):
@@ -138,7 +143,7 @@ class LandscapeGenWnd:
 
         if self.m_landscapeType == 'Rock':
             sizeTurb = cmds.floatSliderGrp('SizeTurb', q=True, v=True)
-            shapeTurb = cmds.floatSliderGrp('ShapeTurb', q=True, v=True)
+            shapeTurb = cmds.intSliderGrp('ShapeTurb', q=True, v=True)
             historyNode = lg.generateObj(self.m_landscapeType, density, minScale, maxScale, dirOptIndex, isNaturalGrw, sizeTurb, shapeTurb, customizedDir)
             self.m_historyList.append(historyNode)
         else:

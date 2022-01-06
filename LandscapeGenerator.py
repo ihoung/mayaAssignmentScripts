@@ -36,6 +36,7 @@ def generateObj(objType, _density, _minScale, _maxScale, _dirOpt, _isNaturalGrw,
                 dir = util.getMiddleDirection((0.0, 1.0, 0.0), dir)
             rotation = cmds.angleBetween(er=True, v1=[0.0,1.0,0.0], v2=dir)
             transformObj(singleRock, posList[i], rotation=rotation)
+            cmds.parent(singleRock, operatedGrp)
     else:
         unitObjNames = {'Grass':'grass_unit', 
                         'Bush':'bush_unit',
@@ -118,7 +119,10 @@ def instanceObj(targetObj, pos, unitScale=1.0, rotation=(0.0, 0.0, 0.0)):
 
 def transformObj(obj, pos, unitScale=1.0, rotation=(0.0, 0.0, 0.0)):
     originalScale = cmds.xform(obj, q=True, ws=True, s=True)
-    cmds.move(pos[0], pos[1], pos[2], obj, a=True)
+    # cmds.move(pos[0], pos[1], pos[2], obj, a=True)
+    cmds.setAttr(obj[0]+'.translateX', pos[0])
+    cmds.setAttr(obj[0]+'.translateY', pos[1])
+    cmds.setAttr(obj[0]+'.translateZ', pos[2])
     cmds.rotate(rotation[0], rotation[1], rotation[2], obj)
     cmds.scale(originalScale[0]*unitScale, originalScale[1]*unitScale, originalScale[2]*unitScale, obj)
     return obj
@@ -159,9 +163,13 @@ def createRock(generalRad, sizeTurb, shapeTurb):
         sphere = createSphere(generalRad-sizeTurb, generalRad+sizeTurb)
         sphereList.append(sphere[0])
     cmds.select(sphereList)
-    rockNode = cmds.polyCBoolOp(op=1, ch=1, pcr=0, cls=1, name='rock_instance')
+    rockNode = cmds.polyCBoolOp(op=1, ch=1, pcr=0, cls=1, name='rock_instance1')
     cmds.polyTriangulate(ch=1, name=rockNode[0])
     cmds.polyReduce(p=50, replaceOriginal=True, name=rockNode[0])
     cmds.polySmooth(name=rockNode[0])
     cmds.delete(rockNode[0], ch=True)
+    # assign material
+    cmds.select(rockNode[0])
+    cmds.sets(e=True, forceElement='rock_aiStandardSurfaceSG')
+    return rockNode[0]
 ######### The end of generating rocks #############
