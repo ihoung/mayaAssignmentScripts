@@ -171,5 +171,5 @@ def createRock(generalRad, sizeTurb, shapeTurb):
     # assign material
     cmds.select(rockNode[0])
     cmds.sets(e=True, forceElement='rock_aiStandardSurfaceSG')
-    return rockNode[0]
+    return [rockNode[0]]
 ######### The end of generating rocks #############
